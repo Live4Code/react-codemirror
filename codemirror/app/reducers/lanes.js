@@ -1,4 +1,3 @@
-import uuid from 'node-uuid';
 import update from 'react/lib/update';
 import * as types from '../constants/LaneActionTypes';
 
@@ -9,7 +8,6 @@ export default function lanes(state = initialState, action) {
     case types.CREATE_LANE:
       const lane = action.lane;
 
-      lane.id = uuid.v4();
       lane.notes = lane.notes || [];
 
       return [...state, lane];

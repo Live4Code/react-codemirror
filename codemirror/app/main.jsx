@@ -1,10 +1,10 @@
-import 'array.prototype.findindex';
-import assign from 'es6-object-assign';
-
-assign.polyfill();
-
-import './main.css';
-
+//import './main.css';
+//global css
+import './assets/global/plugins/font-awesome/css/font-awesome.css';
+import './assets/global/plugins/bootstrap/css/bootstrap.css';
+//metronic global css
+import './assets/global/css/components-md.css';
+import './assets/global/css/plugins-md.css';
 import React from 'react';
 import {Provider} from 'react-redux';
 import App from './containers/App.jsx';
