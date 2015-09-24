@@ -7,6 +7,7 @@ import * as NoteActions from '../actions/notes';
 import * as EditorActions from '../actions/editors';
 
 import Editors from '../components/Editors.jsx'; //CodeMirror Editors wrapped in tabs
+import FileTree from '../components/FileTree.jsx';
 
 //smart Component
 export default class App extends React.Component {
@@ -24,7 +25,14 @@ export default class App extends React.Component {
 
     return (
       <div className="container">
-        <Editors editors={editors} editorActions={this.editorActions} />
+        <div className="row">
+          <div className="col-md-2">
+            <FileTree />
+          </div>
+          <div className="col-md-10">
+            <Editors editors={editors} editorActions={this.editorActions} />
+          </div>
+        </div>
       </div>
     );
   }

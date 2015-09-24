@@ -13,6 +13,12 @@ const APP_TITLE = 'CodeMirror app';
 
 const common = {
   entry: path.resolve(ROOT_PATH, 'app/main.jsx'),
+  plugins: [
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery"
+    })
+  ],
   output: {
     path: path.resolve(ROOT_PATH, 'build'),
     filename: 'bundle.js'
