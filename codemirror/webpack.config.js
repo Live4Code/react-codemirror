@@ -16,7 +16,8 @@ const common = {
   plugins: [
     new webpack.ProvidePlugin({
       $: "jquery",
-      jQuery: "jquery"
+      jQuery: "jquery",
+      _: "lodash"
     })
   ],
   output: {
