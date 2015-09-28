@@ -14,62 +14,18 @@ export default class FileTree extends React.Component {
   initTreeConfig() {
     return {
       "core" : {
-          'data': [{
-                  "text": "Parent Node",
-                  "id": "root",
-                  "children": [{
-                      "text": "Initially selected",
-                      "state": {
-                          "selected": true
-                      },
-                      "id": '1'
-                  }, {
-                      "text": "Custom Icon",
-                      "icon": "fa fa-warning icon-state-danger"
-                  }, {
-                      "text": "Initially open",
-                      "icon" : "fa fa-folder icon-state-success",
-                      "state": {
-                          "opened": true
-                      },
-                      "children": [
-                          {"text": "Another node", "icon" : "fa fa-file icon-state-warning"}
-                      ]
-                  }, {
-                      "text": "Another Custom Icon",
-                      "icon": "fa fa-warning icon-state-warning"
-                  }, {
-                      "text": "Disabled Node",
-                      "icon": "fa fa-check icon-state-success",
-                      "state": {
-                          "disabled": true
-                      }
-                  }, {
-                      "text": "Sub Nodes",
-                      "icon": "fa fa-folder icon-state-danger",
-                      "children": [
-                          {"text": "Item 1", "icon" : "fa fa-file icon-state-warning"},
-                          {"text": "Item 2", "icon" : "fa fa-file icon-state-success"},
-                          {"text": "Item 3", "icon" : "fa fa-file icon-state-default"},
-                          {"text": "Item 4", "icon" : "fa fa-file icon-state-danger"},
-                          {"text": "Item 5", "icon" : "fa fa-file icon-state-info"}
-                      ]
-                  }]
-              },
-              "Another Node"
-          ]
+        'data': []
       },
       "types" : {
-          "default" : {
-              "icon" : "fa fa-folder icon-state-info icon-lg"
-          },
-          "file" : {
-              "icon" : "fa fa-file icon-state-info icon-lg"
-          }
+        "default" : {
+          "icon" : "fa fa-folder icon-state-info icon-lg"
+        },
+        "file" : {
+          "icon" : "fa fa-file icon-state-info icon-lg"
+        }
       },
       "state" : { "key" : "FileTree" },
       "plugins" : [ "state", "types" ]
-
     };
   }
 
@@ -92,6 +48,7 @@ export default class FileTree extends React.Component {
 
   addContextMenu() {
     const filetreeActions = this.props.filetreeActions;
+    const editorActions = this.props.editorActions;
     let config = this.treeConfig;
     config.plugins = config.plugins || [];
     config.plugins.push("contextmenu");
@@ -106,7 +63,7 @@ export default class FileTree extends React.Component {
           "label": "New Folder",
           "action": function (obj) {
             const type = jQuery(obj.reference[0]).attr('type');
-            if (type == 'file') { return; }
+            if (type === 'file') { return; }
             const parentPath = jQuery(obj.reference[0]).attr('id').replace('_anchor','');
             let name = prompt('Enter Directory Name');
             if (name){
@@ -121,12 +78,14 @@ export default class FileTree extends React.Component {
           "label": "New File",
           "action": function (obj) {
             const type = jQuery(obj.reference[0]).attr('type');
-            if (type == 'file') { return; }
+            if (type === 'file') { return; }
             const parentPath = jQuery(obj.reference[0]).attr('id').replace('_anchor','');
             let name = prompt('Enter File Name');
             if (name){
               const node = {id: parentPath+'/'+name, text: name, type: 'file', a_attr: {type: 'file'}};
               filetreeActions.createFile(node);
+              const editor = {path: node.id, content: '', visible: true};
+              editorActions.createEditor(editor);
             }
           }
         },
@@ -136,9 +95,17 @@ export default class FileTree extends React.Component {
           "label": "Rename",
           "action": function (obj) {
             const nodeId = jQuery(obj.reference[0]).attr('id').replace('_anchor','');
-            var newname = prompt('Enter New Name');
-            if (newname){
-              filetreeActions.renameNode(nodeId, newname);
+            let parts = nodeId.split('/');
+            parts.pop();
+            const parentId = parts.join('/');
+            var newName = prompt('Enter New Name');
+            if (newName){
+              const newPath = parentId+'/'+newName;
+              filetreeActions.renameNode(nodeId, newName, newPath);
+              const type = jQuery(obj.reference[0]).attr('type');
+              if (type === 'file') {
+                editorActions.renameEditor(nodeId, newPath);
+              }
             }
           }
         },
@@ -150,6 +117,10 @@ export default class FileTree extends React.Component {
             if(confirm('Are you sure to remove?')){
               const nodeId = jQuery(obj.reference[0]).attr('id').replace('_anchor','');
               filetreeActions.deleteNode(nodeId);
+              const type = jQuery(obj.reference[0]).attr('type');
+              if (type === 'file') {
+                editorActions.deleteEditor(nodeId);
+              }
             }
           }
         }
@@ -158,21 +129,25 @@ export default class FileTree extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    let rootNode = _.clone(nextProps.filetree.root, true);
-    const filetree = nextProps.filetree;
-    this.populateNodeChildred(rootNode, filetree);
-    const treeNode = React.findDOMNode(this.refs.treeContainer);
-    $(treeNode).jstree(true).settings.core.data = rootNode;
-    $(treeNode).jstree(true).refresh();
+    if (nextProps.filetree.updated !== this.props.filetree.updated) {
+      let rootNode = _.clone(nextProps.filetree.root, true);
+      const filetree = nextProps.filetree;
+      this.populateNodeChildred(rootNode, filetree);
+      const treeNode = React.findDOMNode(this.refs.treeContainer);
+      $(treeNode).jstree(true).settings.core.data = rootNode;
+      $(treeNode).jstree(true).refresh();
+    }
   }
 
   componentDidMount() {
     const treeNode = React.findDOMNode(this.refs.treeContainer);
+    const editorActions = this.props.editorActions;
     $(treeNode).jstree(this.treeConfig);
     $(treeNode).on('dblclick', 'a', function(){
       let type = $(this).attr('type');
       if(type == 'file'){
-        console.log($(this).parent().attr('id'));
+        const path = $(this).parent().attr('id');
+        editorActions.selectEditor(path);
       }
     });
   }

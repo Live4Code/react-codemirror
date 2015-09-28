@@ -10,6 +10,8 @@ import * as FileTreeActions from '../actions/filetree';
 import Editors from '../components/Editors.jsx'; //CodeMirror Editors wrapped in tabs
 import FileTree from '../components/FileTree.jsx';
 
+import { ideSelector } from '../selectors/IDESelectors';
+
 //smart Component
 export default class App extends React.Component {
   constructor(props){
@@ -23,16 +25,16 @@ export default class App extends React.Component {
   }
 
   render() {
-    const {lanes, notes, editors, filetree, dispatch} = this.props;
+    const {editorview, filetree, dispatch} = this.props;
 
     return (
       <div className="container">
         <div className="row">
           <div className="col-md-2">
-            <FileTree filetree={filetree} filetreeActions={this.filetreeActions} />
+            <FileTree filetree={filetree} filetreeActions={this.filetreeActions} editorActions={this.editorActions} />
           </div>
           <div className="col-md-10">
-            <Editors editors={editors} editorActions={this.editorActions} />
+            <Editors selected={editorview.selected} editors={editorview.editors} editorActions={this.editorActions} />
           </div>
         </div>
       </div>
@@ -45,9 +47,9 @@ function mapStateToProps(state) {
   return {
     lanes: state.lanes,
     notes: state.notes,
-    editors: state.editors,
+    editorview: visibleEditors(state.editorview),
     filetree: state.filetree
   };
 }
 
-export default connect(mapStateToProps)(App);
+export default connect(ideSelector)(App);

@@ -14,11 +14,12 @@ export function createFile(fileNode) {
   };
 }
 
-export function renameNode(nodeId, name) {
+export function renameNode(nodeId, newName, newPath) {
   return {
     type: types.RENAME_NODE,
     nodeId,
-    name
+    newName,
+    newPath
   };
 }
 

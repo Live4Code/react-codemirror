@@ -1,7 +1,7 @@
 import * as types from '../constants/FileTreeTypes';
 
-const rootNode = { id: 'root', text: 'root', children: []  };
-const initialState = { [rootNode.id]: rootNode };
+const rootNode = { id: 'root', text: 'root', children: [] };
+const initialState = { [rootNode.id]: rootNode, updated: (new Date()).valueOf() };
 
 function createNode(state, node) {
   const parentId = node.id.substring(0,node.id.length-node.text.length-1);
@@ -13,7 +13,7 @@ function createNode(state, node) {
   parentNode.children = parentNode.children.sort((a, b)=>{ //sort alphabetically
     return (a <= b) ? -1 : 1;
   });
-  return Object.assign({}, state, { [parentNode.id]: parentNode }, { [node.id]: node} );
+  return Object.assign({}, state, { [parentNode.id]: parentNode }, { [node.id]: node}, {updated: (new Date()).valueOf()});
 }
 
 function deleteNode(state, node) {
@@ -25,7 +25,7 @@ function deleteNode(state, node) {
   if (!parentNode || !parentNode.children) {
     return state;
   }
-  let stateCopy = Object.assign({}, state);
+  let stateCopy = Object.assign({}, state, {updated: (new Date()).valueOf()});
   delete stateCopy[node.id];
   parentNode = stateCopy[parentId];
   parentNode.children = parentNode.children.filter((childId) => {
@@ -45,10 +45,9 @@ export default function filetree(state = initialState, action){
     case types.RENAME_NODE:
       let node = state[action.nodeId];
       let state1 = deleteNode(state, node);
-      const parentId = node.id.substring(0,node.id.length-node.text.length-1);
       let newNode = Object.assign({}, node);
-      newNode.id = parentId+'/'+action.name;
-      newNode.text = action.name;
+      newNode.id = action.newPath;
+      newNode.text = action.newName;
       return createNode(state1, newNode);
 
     case types.DELETE_NODE:

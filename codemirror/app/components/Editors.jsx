@@ -12,9 +12,19 @@ export default class Editors extends React.Component {
   }
 
   componentDidMount() {
-    const {editors} = this.props;
-    if (editors.length) {
+    const {selected, editors} = this.props;
+    if (selected) {
+      this.handlerTabSelect(selected);
+    }
+    else if (editors.length) {
       this.handlerTabSelect(editors[0].path);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {selected} = nextProps
+    if (selected && selected !== this.state.tabKey) {
+      this.handlerTabSelect(selected);
     }
   }
 
@@ -38,8 +48,9 @@ export default class Editors extends React.Component {
 
   renderTab(editor) {
     const codemirror = this.renderEditor(editor);
+    const title = editor.path.split('/').pop();
     return (
-      <Tab eventKey={editor.path} title={editor.path}>
+      <Tab eventKey={editor.path} title={title}>
         { codemirror }
       </Tab>
     );
@@ -65,7 +76,7 @@ export default class Editors extends React.Component {
     if (path) {
       const editor = {path, content: ''};
       editorActions.createEditor(editor);
-      this.handlerTabSelect(path);
+      //this.handlerTabSelect(path);
     }
   }
 
@@ -75,7 +86,7 @@ export default class Editors extends React.Component {
     if (newPath) {
       const oldPath = this.state.tabKey;
       editorActions.renameEditor(oldPath, newPath);
-      this.handlerTabSelect(newPath);
+      //this.handlerTabSelect(newPath);
     }
   }
 
@@ -86,12 +97,13 @@ export default class Editors extends React.Component {
       const path = this.state.tabKey;
       const {editors} = this.props;
       editorActions.deleteEditor(path);
+      /*
       const remainingEditors = editors.filter((editor) => {
         return editor.path !== path;
       });
       if (remainingEditors.length) {
         this.handlerTabSelect(remainingEditors[0].path);
-      }
+      } */
     }
   }
 
