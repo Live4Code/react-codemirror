@@ -1,6 +1,7 @@
 node_modules/
 build/
 *.log
+codemirror/
 codemirror/app/assets
 codemirror/app/sass
 .DS_Store
