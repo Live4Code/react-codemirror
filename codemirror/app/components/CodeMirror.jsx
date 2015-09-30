@@ -28,7 +28,7 @@ export default class CodeMirrorEditor extends React.Component{
 		this.codeMirror.on('change', this.codemirrorValueChanged.bind(this));
 		this.codeMirror.on('focus', this.focusChanged.bind(this));
 		this.codeMirror.on('blur', this.focusChanged.bind(this));
-		this._currentCodemirrorValue = this.props.value;
+    this.codeMirror.setValue(this.props.value);
 	}
 
 	componentWillUnmount () {
@@ -40,7 +40,7 @@ export default class CodeMirrorEditor extends React.Component{
 
 	componentWillReceiveProps (nextProps) {
 		if (this.codeMirror && this._currentCodemirrorValue !== nextProps.value) {
-			this.codeMirror.setValue(nextProps.value);
+			//this.codeMirror.setValue(nextProps.value);
 		}
 	}
 

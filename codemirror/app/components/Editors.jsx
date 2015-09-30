@@ -129,6 +129,6 @@ export default class Editors extends React.Component {
     let self = this;
     setTimeout(function(){
       self.refs['editor'+key].refresh();
-    },500);
+    },200);
   }
 }

@@ -1,10 +1,10 @@
-# Kanban app - redux port
+# Very simple IDE with CodeMirror and jsTree
 
-This repository contains [redux](https://rackt.github.io/redux/) port of [SurviveJS - Webpack and React](http://survivejs.com/) Kanban example.
+Use localstorage to store files for now.
 
 ## Demo
 
-1. `cd kanban_app`
+1. `cd react-codemirror`
 1. `npm i`
 2. `npm start`
 3. Surf to `localhost:8080`
