@@ -1,4 +1,5 @@
-import './FileTree.css';
+import './FileTree.scss';
+import * as util from '../util/editor';
 
 var jstree = require('jstree');
 import React from 'react';
@@ -84,7 +85,7 @@ export default class FileTree extends React.Component {
             if (name){
               const node = {id: parentPath+'/'+name, text: name, type: 'file', a_attr: {type: 'file'}};
               filetreeActions.createFile(node);
-              const editor = {path: node.id, content: '', visible: true};
+              const editor = {path: node.id, content: ''};
               editorActions.createEditor(editor);
             }
           }
@@ -95,9 +96,7 @@ export default class FileTree extends React.Component {
           "label": "Rename",
           "action": function (obj) {
             const nodeId = jQuery(obj.reference[0]).attr('id').replace('_anchor','');
-            let parts = nodeId.split('/');
-            parts.pop();
-            const parentId = parts.join('/');
+            const parentId = util.getParentPath(nodeId);
             var newName = prompt('Enter New Name');
             if (newName){
               const newPath = parentId+'/'+newName;

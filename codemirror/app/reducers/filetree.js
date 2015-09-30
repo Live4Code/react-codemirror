@@ -1,10 +1,12 @@
 import * as types from '../constants/FileTreeTypes';
+import * as util from '../util/editor';
 
 const rootNode = { id: 'root', text: 'root', children: [] };
 const initialState = { [rootNode.id]: rootNode, updated: (new Date()).valueOf() };
 
 function createNode(state, node) {
-  const parentId = node.id.substring(0,node.id.length-node.text.length-1);
+  const parentId = util.getParentPath(node.id);
+  //const parentId = node.id.substring(0,node.id.length-node.text.length-1);
   let parentNode = state[parentId];
   if (!parentNode || !parentNode.children) {
     return state;
@@ -20,7 +22,8 @@ function deleteNode(state, node) {
   if (!node){
     return state;
   }
-  const parentId = node.id.substring(0,node.id.length-node.text.length-1);
+  const parentId = util.getParentPath(node.id);
+  //const parentId = node.id.substring(0,node.id.length-node.text.length-1);
   let parentNode = state[parentId];
   if (!parentNode || !parentNode.children) {
     return state;

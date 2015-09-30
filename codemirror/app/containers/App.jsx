@@ -34,7 +34,8 @@ export default class App extends React.Component {
             <FileTree filetree={filetree} filetreeActions={this.filetreeActions} editorActions={this.editorActions} />
           </div>
           <div className="col-md-10">
-            <Editors selected={editorview.selected} editors={editorview.editors} editorActions={this.editorActions} />
+            <Editors selected={editorview.selected} editors={editorview.editors} filetreeActions={this.filetreeActions}
+              editorActions={this.editorActions} />
           </div>
         </div>
       </div>

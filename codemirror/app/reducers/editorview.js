@@ -71,10 +71,17 @@ export default function editorview(state = initialState, action) {
     case types.DELETE_EDITOR:
       editors = state.editors.filter((editor) => editor.path !== action.path);
       visible = state.visible.filter((editor) => editor.path !== action.path);
-      if (state.selected === action.path && visible.length) {
-        return {selected: visible[visible.length-1].path, editors, visible};
+      console.log(editors);
+      console.log(visible);
+      if (state.selected !== action.path) {
+        return Object.assign({}, state, {editors}, {visible});
+      } else {
+        if (visible.length) {
+          return {selected: visible[visible.length-1].path, editors, visible};
+        } else {
+          return initialState;
+        }
       }
-      return initialState;
 
     default:
       return state;

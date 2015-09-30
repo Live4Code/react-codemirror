@@ -29,6 +29,12 @@ const common = {
 if(TARGET === 'start' || !TARGET) {
   module.exports = merge(common, {
     devtool: 'eval-source-map',
+    devServer: {
+      historyApiFallback: true,
+      hot: true,
+      inline: true,
+      progress: true
+    },
     module: {
       loaders: [
         {
@@ -55,14 +61,58 @@ if(TARGET === 'start' || !TARGET) {
         }
       ]
     },
-    devServer: {
-      historyApiFallback: true,
-      hot: true,
-      inline: true,
-      progress: true
-    },
     plugins: [
       new webpack.HotModuleReplacementPlugin(),
+      new HtmlwebpackPlugin({
+        title: APP_TITLE
+      })
+    ]
+  });
+}
+
+if(TARGET === 'build') {
+  module.exports = merge(common, {
+    devtool: 'source-map',
+    module: {
+      loaders: [
+        {
+          test: /\.jsx?$/,
+          loaders: ['react-hot', 'babel'],
+          include: path.resolve(ROOT_PATH, 'app')
+        },
+        {
+          test: /\.css$/,
+          loader: ExtractTextPlugin.extract('style', 'css')
+        },
+        {
+          test: /\.scss$/,
+          loader: ExtractTextPlugin.extract('style', 'css!sass'),
+        },
+        {
+          test: /\.(png|jpg|gif)$/,
+          loader: 'url?limit=25000'
+        },
+        {
+          test: /\.(woff|woff2|svg|ttf|eot)(\?.+)?$/,
+          loader: 'url?limit=100000'
+        }
+      ]
+    },
+    plugins: [
+      new Clean(['build']),
+      new ExtractTextPlugin('styles.css?[chunkhash]'),
+      /*
+      new webpack.DefinePlugin({
+        'process.env': {
+          // This affects react lib size
+          'NODE_ENV': JSON.stringify('production')
+        }
+      }), */
+      new webpack.optimize.UglifyJsPlugin({
+        compress: {
+          warnings: false
+        }
+      }),
       new HtmlwebpackPlugin({
         title: APP_TITLE
       })

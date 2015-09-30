@@ -1,4 +1,5 @@
 import './Editors.scss';
+import * as util from '../util/editor';
 
 import React from 'react';
 import { Tabs, Tab} from 'react-bootstrap';
@@ -50,7 +51,7 @@ export default class Editors extends React.Component {
 
   renderTab(editor) {
     const codemirror = this.renderEditor(editor);
-    const title = editor.path.split('/').pop();
+    const title = util.getNameFromPath(editor.path);
     const header = (
       <div>
         <span className='editor-title'>{title}</span>
@@ -74,58 +75,56 @@ export default class Editors extends React.Component {
   }
 
   closeEditor(path, e) {
-    const editorActions = this.props.editorActions;
-    editorActions.hideEditor(path);
+    this.props.editorActions.hideEditor(path);
     return false;
   }
 
   updateCode (path, content) {
-    const editorActions = this.props.editorActions;
-    editorActions.updateEditor(path, content);
+    this.props.editorActions.updateEditor(path, content);
   }
 
   addEditor () {
-    const editorActions = this.props.editorActions;
-    const path = prompt('Enter file name');
+    let path = prompt('Enter file name');
     if (path) {
-      const editor = {path, content: ''};
-      editorActions.createEditor(editor);
-      //this.handlerTabSelect(path);
+      if (path.indexOf('root')!==0) {
+        if (path[0] === '/') {
+          path  = 'root'+path;
+        } else {
+          path = 'root/'+path;
+        }
+      }
+      const node = {id: path, text: util.getNameFromPath(path), type: 'file', a_attr: {type: 'file'}};
+      this.props.filetreeActions.createFile(node);
+      const editor = {path: path, content: ''};
+      this.props.editorActions.createEditor(editor);
     }
   }
 
   renameEditor() {
-    const editorActions = this.props.editorActions;
-    const newPath = prompt('Enter new name for the active editor');
-    if (newPath) {
+    const newName = prompt('Enter new name for the active editor');
+    if (newName) {
       const oldPath = this.state.tabKey;
-      editorActions.renameEditor(oldPath, newPath);
-      //this.handlerTabSelect(newPath);
+      const parentId = util.getParentPath(oldPath);
+      const newPath = parentId+'/'+newName;
+      this.props.filetreeActions.renameNode(oldPath, newName, newPath);
+      this.props.editorActions.renameEditor(oldPath, newPath);
     }
   }
 
   deleteEditor() {
-    const editorActions = this.props.editorActions;
     const ok = confirm('Are you sure to remove the active editor?');
     if (ok) {
       const path = this.state.tabKey;
       const {editors} = this.props;
-      editorActions.deleteEditor(path);
-      /*
-      const remainingEditors = editors.filter((editor) => {
-        return editor.path !== path;
-      });
-      if (remainingEditors.length) {
-        this.handlerTabSelect(remainingEditors[0].path);
-      } */
+      this.props.editorActions.deleteEditor(path);
+      this.props.filetreeActions.deleteNode(path);
     }
   }
 
   handlerTabSelect(key, fromProps){
-    const editorActions = this.props.editorActions;
     this.setState({tabKey: key});
     if (!fromProps) {
-      editorActions.selectTab(key);
+      this.props.editorActions.selectTab(key);
     }
     let self = this;
     setTimeout(function(){
