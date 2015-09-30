@@ -11,14 +11,21 @@ export function selectEditor(path) {
   return {
     type: types.SELECT_EDITOR,
     path
-  }
+  };
+}
+
+export function selectTab(path) {
+  return {
+    type: types.SELECT_TAB,
+    path
+  };
 }
 
 export function hideEditor(path) {
   return {
     type: types.HIDE_EDITOR,
     path
-  }
+  };
 }
 
 export function updateEditor(path, content) {

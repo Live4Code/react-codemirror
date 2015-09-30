@@ -1,6 +1,6 @@
-import './FileTree.scss';
-var jstree = require('jstree');
+import './FileTree.css';
 
+var jstree = require('jstree');
 import React from 'react';
 
 export default class FileTree extends React.Component {
@@ -159,7 +159,7 @@ export default class FileTree extends React.Component {
 
   render() {
     return (
-      <div ref="treeContainer"></div>
+      <div ref="treeContainer" className="FileTree-wrapper"></div>
     );
   }
 

@@ -1,3 +1,5 @@
+import './Editors.scss';
+
 import React from 'react';
 import { Tabs, Tab} from 'react-bootstrap';
 
@@ -14,24 +16,24 @@ export default class Editors extends React.Component {
   componentDidMount() {
     const {selected, editors} = this.props;
     if (selected) {
-      this.handlerTabSelect(selected);
+      this.handlerTabSelect(selected, true);
     }
     else if (editors.length) {
-      this.handlerTabSelect(editors[0].path);
+      this.handlerTabSelect(editors[0].path, true);
     }
   }
 
   componentWillReceiveProps(nextProps) {
     const {selected} = nextProps
     if (selected && selected !== this.state.tabKey) {
-      this.handlerTabSelect(selected);
+      this.handlerTabSelect(selected, true);
     }
   }
 
   render() {
     const {editors} = this.props;
     return (
-      <div className="row">
+      <div className="row Editors-wrapper">
         <div className="col-md-12">
           <button className='btn btn-primary' onClick={this.addEditor.bind(this)}>+ New</button>
           <button className='btn btn-warning' onClick={this.renameEditor.bind(this)}>Rename</button>
@@ -49,8 +51,14 @@ export default class Editors extends React.Component {
   renderTab(editor) {
     const codemirror = this.renderEditor(editor);
     const title = editor.path.split('/').pop();
+    const header = (
+      <div>
+        <span className='editor-title'>{title}</span>
+        <span className='fa fa-close close-tab' onClick={this.closeEditor.bind(this, editor.path)}></span>
+      </div>
+    );
     return (
-      <Tab eventKey={editor.path} title={title}>
+      <Tab eventKey={editor.path} title={header}>
         { codemirror }
       </Tab>
     );
@@ -63,6 +71,12 @@ export default class Editors extends React.Component {
     };
     return (<CodeMirrorEditor value={editor.content} path={editor.path} onChange={this.updateCode.bind(this, editor.path)}
       options={options} ref={'editor'+editor.path}/>);
+  }
+
+  closeEditor(path, e) {
+    const editorActions = this.props.editorActions;
+    editorActions.hideEditor(path);
+    return false;
   }
 
   updateCode (path, content) {
@@ -107,8 +121,12 @@ export default class Editors extends React.Component {
     }
   }
 
-  handlerTabSelect(key){
+  handlerTabSelect(key, fromProps){
+    const editorActions = this.props.editorActions;
     this.setState({tabKey: key});
+    if (!fromProps) {
+      editorActions.selectTab(key);
+    }
     let self = this;
     setTimeout(function(){
       self.refs['editor'+key].refresh();

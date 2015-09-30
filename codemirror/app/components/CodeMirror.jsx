@@ -98,7 +98,7 @@ export default class CodeMirrorEditor extends React.Component{
 	}
 
 	render () {
-		let className = 'ReactCodeMirror';
+		let className = 'CodeMirror-wrapper ReactCodeMirror';
 		if (this.state.isFocused) {
 			className += ' ReactCodeMirror--focused';
 		}
